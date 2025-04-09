@@ -1,6 +1,7 @@
 import bpy
 
-from . import crystal_gen_operators, crystal_gen_ui
+from . import crystal_gen_operators, crystal_gen_ui, crystal_gen_utils
+
 
 bl_info = {
     'name' : 'Procedural Crystal Generator',
@@ -21,7 +22,7 @@ class PCG_PT_MainPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text=f"PCG {bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}")
+        layout.label(text=f"Procedural Crystal Generator {bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}")
 
 classes = [
     PCG_PT_MainPanel,
@@ -43,5 +44,10 @@ def unregister():
         bpy.utils.unregister_class(cls)
 
 if __name__ == "__main__":
+    # Try to unregister
+    try: unregister()
+    except: pass
+
     register()
+    
     
