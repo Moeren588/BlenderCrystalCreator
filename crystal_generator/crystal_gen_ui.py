@@ -5,6 +5,8 @@ from . import crystal_gen_operators, crystal_gen_utils
 class PCG_PT_CreateCrystal(bpy.types.Panel):
     bl_idname = "PCG_PT_CreateCrystal"
     bl_label = "Create Crystal"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
     bl_parent_id = "PCG_PT_main"
 
     def draw(self, context):
