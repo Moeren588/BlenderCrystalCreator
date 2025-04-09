@@ -61,13 +61,17 @@ def generate_prism_bmes(radius : float, height : float, vertices : int) -> bpy.t
         segments=vertices
     )
     base_verts = base_verts_data['verts']
+    base_edges = [e for e in bm.edges if all(v in base_verts for v in e.verts)]
 
-    extruded_data = bmesh.ops.extrude_vert_indiv(bm, verts=base_verts)
-    top_verts = extruded_data['verts']
+    extruded_geom = bmesh.ops.extrude_edge_only(bm,edges=base_edges)
+
+    # extruded_data = bmesh.ops.extrude_vert_indiv(bm, verts=base_verts)
+    top_verts = [v for v in extruded_geom['geom'] if isinstance(v, bmesh.types.BMVert) and v not in base_verts ]
 
     translation_vector = mathutils.Vector((0, 0, height))
     bmesh.ops.translate(bm, vec=translation_vector, verts=top_verts)
 
+    # Temp filling the top
     bmesh.ops.contextual_create(bm, geom=base_verts)
     bmesh.ops.contextual_create(bm, geom=top_verts)
 

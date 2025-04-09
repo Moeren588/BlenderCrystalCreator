@@ -11,12 +11,12 @@ class PCG_PT_CreateCrystal(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text="Create Crystal")
         
+        layout.prop(context.scene, "procedural_crystal_radius")
+        layout.prop(context.scene, "procedural_crystal_height")
+        layout.prop(context.scene, "procedural_crystal_vert_count")
+
         op_generate = layout.operator(crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_idname, text=crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_label)
-        layout.prop(op_generate, "radius")
-        layout.prop(op_generate, "height")
-        layout.prop(op_generate, "vertices")
 
 
 classes = [
@@ -29,5 +29,5 @@ def register():
 
 
 def unregister():
-    for cls in classes.reverse():
+    for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
