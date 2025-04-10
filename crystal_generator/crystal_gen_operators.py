@@ -11,7 +11,7 @@ class MESH_OT_generate_procedural_crystal(bpy.types.Operator):
 
         crystal_gen_utils.log_console_message('info', 'Generating crystal...')
 
-        crystal_gen_utils.generate_prism_bmes(bpy.context.scene.procedural_crystal_radius, bpy.context.scene.procedural_crystal_height, bpy.context.scene.procedural_crystal_vert_count)
+        crystal_gen_utils.generate_basic_crystal_bmesh(bpy.context.scene.procedural_crystal_radius, bpy.context.scene.procedural_crystal_height, bpy.context.scene.procedural_crystal_vert_count)
         
         crystal_gen_utils.log_console_message('finish', 'Finished generating crystal')
 
