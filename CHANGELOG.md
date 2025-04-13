@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [0.1.0] - 2025-04-13
+
 ### ADDED
 - Added basic project setup for addon: init, ui, ops and utils
 - Added simple util functions:
