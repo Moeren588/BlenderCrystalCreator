@@ -15,6 +15,8 @@ class PCG_PT_CreateCrystal(bpy.types.Panel):
         layout.prop(context.scene, "procedural_crystal_radius")
         layout.prop(context.scene, "procedural_crystal_height")
         layout.prop(context.scene, "procedural_crystal_vert_count")
+        layout.prop(context.scene, "procedural_crystal_has_pointy_top")
+        layout.prop(context.scene, "procedural_crystal_has_pointy_bottom")
 
         op_generate = layout.operator(crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_idname, text=crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_label)
 

@@ -36,6 +36,11 @@ def log_console_message(log_type:str, message:str) -> None:
         case 'DEBUG': print(f'\033[35m[DEBUG]:\033[0m {message}')
         case _: print(f'[{log_type.upper()}] : {message}')
 
+def calculate_center_vert_pos(verts: list) -> mathutils.Vector:
+    """ Returns the average position of a list of elements """
+
+    return sum((v.co for v  in verts), mathutils.Vector((0.0, 0.0, 0.0)) ) / len(verts)
+
 ### --- MESH GENERATION ---
 def generate_basic_crystal_bmesh(radius : float, height : float, vertices : int) -> bpy.types.Object:
     """Generates a simple procedural prism mesh """
@@ -81,26 +86,29 @@ def generate_basic_crystal_bmesh(radius : float, height : float, vertices : int)
     translation_vector = mathutils.Vector((0, 0, height))
     bmesh.ops.translate(bm, vec=translation_vector, verts=top_verts)
 
-    # Temp filling the top
-    bmesh.ops.contextual_create(bm, geom=base_verts) # Bottom face
-    # Top face
-    created_geom = bmesh.ops.contextual_create(bm, geom=top_verts)
-    current_top_face = next((f for f in created_geom['faces']), None) if 'faces' in created_geom else None
+    top_shoulder_edges = [e for e in bm.edges if all(v in top_verts for v in e.verts)]
+    # Create pointy top
+    if bpy.context.scene.procedural_crystal_has_pointy_top:
+        extruded_geom_point = bmesh.ops.extrude_edge_only(bm, edges=top_shoulder_edges)
+        new_top_verts = [v for v in extruded_geom_point['geom'] if isinstance(v, bmesh.types.BMVert) and v not in top_verts]
+        translation_vector_point = mathutils.Vector((0, 0, height*0.5))
+        bmesh.ops.translate(bm, vec=translation_vector_point, verts=new_top_verts)
+        point_center = calculate_center_vert_pos(new_top_verts)
+        bmesh.ops.pointmerge(bm, verts=new_top_verts, merge_co=point_center)
+    else:
+        bmesh.ops.contextual_create(bm, geom=top_shoulder_edges)
     
-    if not current_top_face:
-        log_console_message('error', f'Failed to create top face for pointy top. Aborting')
-        return obj
-    
-    extruded_geom_point = bmesh.ops.extrude_face_region(bm, geom=[current_top_face])
-    new_top_verts = [v for v in extruded_geom_point['geom'] if isinstance(v, bmesh.types.BMVert) and v not in current_top_face.verts]
-    new_top_face = next((f for f in extruded_geom_point['geom'] if isinstance(f, bmesh.types.BMFace) and all(v in new_top_verts for v in f.verts)), None )
-
-    translation_vector_point = mathutils.Vector((0, 0, height*0.5))
-    bmesh.ops.translate(bm, vec=translation_vector_point, verts=new_top_verts)
-
-    point_center = new_top_face.calc_center_median()
-
-    bmesh.ops.pointmerge(bm, verts=new_top_verts, merge_co=point_center)
+    # Create pointy bottom
+    if bpy.context.scene.procedural_crystal_has_pointy_bottom:
+        extruded_geom_point = bmesh.ops.extrude_edge_only(bm, edges=base_edges)
+        new_bottom_verts = [v for v in extruded_geom_point['geom'] if isinstance(v, bmesh.types.BMVert) and v not in base_verts] 
+        translation_vector_bottom_point = -mathutils.Vector((0, 0, height*0.5))
+        bmesh.ops.translate(bm, vec=translation_vector_bottom_point, verts=new_bottom_verts)
+        point_center = calculate_center_vert_pos(new_bottom_verts)
+        bmesh.ops.pointmerge(bm, verts=new_bottom_verts, merge_co=point_center)
+        obj.location -= translation_vector_bottom_point
+    else:
+        bmesh.ops.contextual_create(bm, geom=base_verts) # Bottom face
 
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
 

@@ -172,3 +172,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Crystal Generator specific
+crystal_generator*.zip
