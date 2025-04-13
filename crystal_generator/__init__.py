@@ -48,5 +48,6 @@ if __name__ == "__main__":
     except: pass
 
     register()
+    crystal_gen_utils.log_console_message('sys', f'Registered Crystal Generator v. {bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}')
     
     
