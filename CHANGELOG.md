@@ -14,3 +14,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - create or get collection
 - Added crystal generation UI and Operator
 - Simple crystal generator functioning
+- Rust zipper module
