@@ -12,3 +12,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added simple util functions:
     - log console message
     - create or get collection
+- Added crystal generation UI and Operator
+- Simple crystal generator functioning
