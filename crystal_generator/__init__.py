@@ -10,7 +10,7 @@ bl_info = {
     'location' : 'View3D',
     'category' : 'Add Mesh',
     'blender' : (4, 1, 0),
-    'version' : (0, 1, 0),
+    'version' : (0, 1, 1),
 }
 
 class PCG_PT_MainPanel(bpy.types.Panel):
@@ -34,6 +34,8 @@ def register():
     crystal_gen_operators.register()
     crystal_gen_ui.register()
 
+    crystal_gen_utils.log_console_message('sys', f"Registered Crystal Generator v. {bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}")
+
 
 def unregister():
     crystal_gen_ui.unregister()
@@ -48,6 +50,5 @@ if __name__ == "__main__":
     except: pass
 
     register()
-    crystal_gen_utils.log_console_message('sys', f'Registered Crystal Generator v. {bl_info['version'][0]}.{bl_info['version'][1]}.{bl_info['version'][2]}')
     
     

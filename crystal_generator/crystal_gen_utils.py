@@ -5,7 +5,21 @@ import math
 
 ## --- HELPERS ---
 def create_or_get_collection(collection_name:str, parent_collection_name:str=None) -> bpy.types.Collection:
-    """Returns the collection with given name, creates it if it doesn't exist"""
+    """Returns the collection with given name.
+    
+    Looks for the given collection, and creates it if it doesn't exist.
+    
+    When creating a new collection it uses the `parent_collection_name` to
+    link the new collection to. Uses `Scene Collection` if not specified.
+
+    Args:
+        collection_name : Name of the collection to find/create
+        parent_collection_name : Name of the potential parent collection. 
+            `Scene Collection` if None
+
+    Returns:
+        The collection object of the given name.
+    """
     # Early return if collection already exists
     if collection_name in bpy.data.collections:
         return bpy.data.collections[collection_name]
@@ -37,13 +51,35 @@ def log_console_message(log_type:str, message:str) -> None:
         case _: print(f'[{log_type.upper()}] : {message}')
 
 def calculate_center_vert_pos(verts: list) -> mathutils.Vector:
-    """ Returns the average position of a list of elements """
+    """ Returns the average position of a list of verts 
+    
+    Uses the coordinates for the input list of verts and caluclates their average position.
+
+    Args:
+        verts : List of vertices.
+
+    Returns:
+        The average location of the verts.
+
+    """
 
     return sum((v.co for v  in verts), mathutils.Vector((0.0, 0.0, 0.0)) ) / len(verts)
 
 ### --- MESH GENERATION ---
 def generate_basic_crystal_bmesh(radius : float, height : float, vertices : int) -> bpy.types.Object:
-    """Generates a simple procedural prism mesh """
+    """Generates a simple procedural crystal mesh 
+    
+    Creates a crystal mesh using bmesh, no UVs generated.
+    Origin for the object is set to the center of the bottom shoulder.
+
+    Args:
+        radius : The radius of the crystal
+        height : The heigh of the crystal base, without the points.
+        vertices : the amount of verts around the crystal (i.e. how low poly it is)
+
+    Returns:
+        Returns the generated crystal object mesh.
+    """
 
     # Create the base object
     mesh_data = bpy.data.meshes.new("Chrystal_Mesh")
@@ -88,7 +124,7 @@ def generate_basic_crystal_bmesh(radius : float, height : float, vertices : int)
 
     top_shoulder_edges = [e for e in bm.edges if all(v in top_verts for v in e.verts)]
     # Create pointy top
-    if bpy.context.scene.procedural_crystal_has_pointy_top:
+    if bpy.context.scene.crystal_generator.crystal_has_pointy_top:
         extruded_geom_point = bmesh.ops.extrude_edge_only(bm, edges=top_shoulder_edges)
         new_top_verts = [v for v in extruded_geom_point['geom'] if isinstance(v, bmesh.types.BMVert) and v not in top_verts]
         translation_vector_point = mathutils.Vector((0, 0, height*0.5))
@@ -99,7 +135,7 @@ def generate_basic_crystal_bmesh(radius : float, height : float, vertices : int)
         bmesh.ops.contextual_create(bm, geom=top_shoulder_edges)
     
     # Create pointy bottom
-    if bpy.context.scene.procedural_crystal_has_pointy_bottom:
+    if bpy.context.scene.crystal_generator.crystal_has_pointy_bottom:
         extruded_geom_point = bmesh.ops.extrude_edge_only(bm, edges=base_edges)
         new_bottom_verts = [v for v in extruded_geom_point['geom'] if isinstance(v, bmesh.types.BMVert) and v not in base_verts] 
         translation_vector_bottom_point = -mathutils.Vector((0, 0, height*0.5))
