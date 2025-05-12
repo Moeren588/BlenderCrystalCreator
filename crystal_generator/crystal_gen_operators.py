@@ -1,6 +1,10 @@
 import bpy
+import os
 
 from . import crystal_gen_utils
+
+custom_icons = None
+
 
 class GRP_crystal_generator_properties(bpy.types.PropertyGroup):
     crystal_radius : bpy.props.FloatProperty(name="Radius", default=1.0, min=0.01) # type: ignore
@@ -43,12 +47,45 @@ class MESH_OT_generate_procedural_crystal(bpy.types.Operator):
 classes = [
     GRP_crystal_generator_properties,
     MESH_OT_generate_procedural_crystal,
-]
+]   
+
+def register_custom_icon() -> None:
+    """ Registers the custom crystal generator icon """
+    global custom_icons
+
+    custom_icons = bpy.utils.previews.new()
+
+    # Generate the path
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    icon_path = os.path.join(script_dir, 'data', 'crystal_generator.png')
+
+    try:
+        custom_icons.load('CRYSTAL_GENERATOR', icon_path, 'IMAGE')
+    except Exception as e:
+        crystal_gen_utils.log_console_message('error', f'Loading custom icon "{icon_path}" failed: {e}')
+
+def unregister_cusom_icon() -> None:
+    """ Unregisters the custom crystal generator icon """
+    global custom_icons
+
+    if not custom_icons:
+        return
+
+    bpy.utils.previews.remove(custom_icons)
+    custom_icons = None
+
+def menu_func(self, context) -> None:
+    """ Adds the crystal generator to the "Add mesh" menu """
+    self.layout.operator(MESH_OT_generate_procedural_crystal.bl_idname, icon_value=custom_icons['CRYSTAL_GENERATOR'].icon_id)
 
 def register():
+    register_custom_icon()
+
     ## CLASSES
     for cls in classes:
         bpy.utils.register_class(cls)
+    
+    bpy.types.VIEW3D_MT_mesh_add.append(menu_func)
 
     ## PROPS
     bpy.types.Scene.crystal_generator = bpy.props.PointerProperty(type=GRP_crystal_generator_properties)
@@ -58,5 +95,9 @@ def unregister():
     del bpy.types.Scene.crystal_generator
 
     ## CLASSES
+    bpy.types.VIEW3D_MT_mesh_add.remove(menu_func)
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
+
+    unregister_cusom_icon()
+    

@@ -18,7 +18,7 @@ class PCG_PT_CreateCrystal(bpy.types.Panel):
         layout.prop(context.scene.crystal_generator, "crystal_has_pointy_top")
         layout.prop(context.scene.crystal_generator, "crystal_has_pointy_bottom")
 
-        op_generate = layout.operator(crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_idname, text=crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_label)
+        op_generate = layout.operator(crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_idname, text=crystal_gen_operators.MESH_OT_generate_procedural_crystal.bl_label, icon_value=crystal_gen_operators.custom_icons['CRYSTAL_GENERATOR'].icon_id)
 
 
 classes = [
